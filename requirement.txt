@@ -1,3 +1,6 @@
 streamlit
+Flask
+pickle
 nltk
 sklearn
+string

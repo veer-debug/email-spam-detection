@@ -1,10 +1,8 @@
 from flask import Flask,render_template
-import pickle
 import string
 from nltk.corpus import stopwords
 import nltk
 from nltk.stem.porter import PorterStemmer
-from flask import Flask ,request,render_template
 import pickle
 import requests
 import pandas as pd
