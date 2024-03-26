@@ -1,9 +1,22 @@
-import streamlit as st
+from flask import Flask,render_template
 import pickle
 import string
 from nltk.corpus import stopwords
 import nltk
 from nltk.stem.porter import PorterStemmer
+from flask import Flask ,request,render_template
+import pickle
+import requests
+import pandas as pd
+from patsy import dmatrices
+
+app=Flask(__name__)
+
+
+
+
+
+# ---------------------------------------------------------------------
 
 ps = PorterStemmer()
 
@@ -32,23 +45,55 @@ def transform_text(text):
 
     return " ".join(y)
 
-tfidf = pickle.load(open('email-spam-detection/Statics/Datas/vectorizer.pkl','rb'))
-model = pickle.load(open('email-spam-detection/Statics/Datas/model.pkl','rb'))
+tfidf = pickle.load(open('./Statics/Datas/vectorizer.pkl','rb'))
+model = pickle.load(open('./Statics/Datas/model.pkl','rb'))
 
-st.title("Email/SMS Spam Classifier")
 
-input_sms = st.text_area("Enter the message")
 
-if st.button('Predict'):
+# ---------------------------------------------------------------
 
-    # 1. preprocess
-    transformed_sms = transform_text(input_sms)
-    # 2. vectorize
-    vector_input = tfidf.transform([transformed_sms])
-    # 3. predict
-    result = model.predict(vector_input)[0]
-    # 4. Display
-    if result == 1:
-        st.header("Spam")
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/classifi',methods= ['GET','POST'])
+def priduction():
+    status=False
+    if request.method=="POST":
+        try:
+            if request.form:
+                k=''
+                message=request.form['myText']
+                print(message)
+                transformed_sms = transform_text(message)
+                # 2. vectorize
+                vector_input = tfidf.transform([transformed_sms])
+                # 3. predict
+                result = model.predict(vector_input)[0]
+                # 4. Display
+                if result == 1:
+                    k="Spam"
+                    
+                else:
+                    k="Not Spam"
+                status=True
+
+                return render_template('index.html',email=k,status=status,message=message)
+                            
+                
+                
+                
+
+        except Exception as e:
+            error={'error':e}
+            print(e)
+            return render_template('index.html')
+    
     else:
-        st.header("Not Spam")
+        return render_template('index.html')
+
+
+if __name__=="__main__":
+    app.run(debug=True)
