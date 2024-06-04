@@ -1,5 +1,5 @@
 Flask
 pickle
 nltk
-sklearn
+scikit-learn
 string
