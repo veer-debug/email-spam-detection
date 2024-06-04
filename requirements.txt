@@ -2,4 +2,4 @@ Flask
 pickle5
 nltk
 scikit-learn
-string
+strings
